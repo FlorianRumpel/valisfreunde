@@ -6,7 +6,6 @@ import prisma from "@/lib/prisma"; // passe Pfad an, falls nötig
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-
     // Beispiel: Prisma-Model heißt "Entry" mit Feldern title, content
     const created = await prisma.entry.create({
       data: body,

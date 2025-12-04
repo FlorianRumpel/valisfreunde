@@ -1,5 +1,7 @@
 import * as z from "zod";
 
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 1MB
+
 export const formSchema = z.object({
   pq0: z
     .string({error: "Bitte beantworte die Frage"})
@@ -14,5 +16,14 @@ export const formSchema = z.object({
   vq2: z.string().max(200).optional(),
   vq3: z.string().max(200).optional(),
   vq4: z.string().max(200).optional(),
-  // upload: z.instanceof(File).optional(),
+  upload: z
+    .instanceof(File)
+    .optional()
+    .refine(
+      (file) => {
+        if (!file) return true;
+        return file.size <= MAX_FILE_SIZE;
+      },
+      {error: `Datei darf maximal ${MAX_FILE_SIZE / 1024 / 1024}MB groß sein`},
+    ),
 });

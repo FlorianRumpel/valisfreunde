@@ -16,13 +16,14 @@ model Entry {
   pq4 String?
   // pq5 String
 
-  vq0 String?
-  vq1 String?
-  vq2 String?
-  vq3 String?
-  vq4 String?
+  vq0       String?
+  vq1       String?
+  vq2       String?
+  vq3       String?
+  vq4       String?
   // vq5 String
+  uploadURL String? @default("/no-image.png")
 
-  requestAccepted Boolean  @default(false)
-  createdAt       DateTime @default(now())
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
 }

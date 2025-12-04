@@ -2,8 +2,7 @@
 import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import * as z from "zod";
-import {ref, uploadBytes, getDownloadURL} from "firebase/storage";
-import {storage} from "@/lib/firebase";
+
 import {useState} from "react";
 import {Button} from "@/components/ui/button";
 import {
@@ -25,6 +24,7 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {formSchema} from "@/lib/zod";
 import {questions} from "@/lib/objects";
+import {uploadImage} from "../actions/upload";
 
 export default function FreundebuchForm() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -38,37 +38,26 @@ export default function FreundebuchForm() {
   });
 
   const [preview, setPreview] = useState<string>();
-  // async function uploadImage(file: File): Promise<string> {
-  //   if (!file) return "";
 
-  //   // Optional: prüfen auf Größe (z.B. max 2MB)
-  //   const maxSizeMB = 2;
-  //   if (file.size / 1024 / 1024 > maxSizeMB) {
-  //     throw new Error(`Datei darf maximal ${maxSizeMB}MB groß sein`);
-  //   }
-
-  //   const fileRef = ref(storage, `freundebuch/${Date.now()}-${file.name}`);
-  //   await uploadBytes(fileRef, file);
-
-  //   const url = await getDownloadURL(fileRef);
-  //   return url;
-  // }
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    // let imageUrl = "";
-    // if (data.upload) {
-    //   imageUrl = await uploadImage(data.upload);
-    // }
-    // const payload = {
-    //   ...data,
-    //   uploade: imageUrl,
-    // };
-    console.log("Eintrag gesendet:", data);
+    let imageUrl = "";
+    if (data.upload) {
+      imageUrl = await uploadImage(data.upload);
+    }
+
+    const payload = {
+      ...data,
+      uploadURL: imageUrl,
+    };
+    delete payload.upload;
+
+    console.log("Eintrag gesendet:", payload);
     form.reset();
     try {
       await fetch("/api/submit", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
     } catch (e) {
       console.error(e);
@@ -79,7 +68,7 @@ export default function FreundebuchForm() {
   type QuestionKeys = Extract<FormKeys, `pq${string}` | `vq${string}`>;
 
   return (
-    <div className="mx-4 flex justify-center flex-col">
+    <div className="mb-8 mx-4 flex justify-center flex-col items-center">
       <p className="leading-7 mt-4">
         Gib dir mühe denn nur die Besten Einträge werden veröffentlicht!
       </p>
@@ -95,55 +84,6 @@ export default function FreundebuchForm() {
           </CardHeader>
           <CardContent>
             <FieldGroup>
-              {/* <Controller
-              rules={{
-                validate: (file) => {
-                  if (!file) return true; // optional
-                  const maxSizeMB = 1;
-                  if (file.size / 1024 / 1024 > maxSizeMB) {
-                    return `Datei darf maximal ${maxSizeMB}MB groß sein`;
-                  }
-                  return true;
-                },
-              }}
-              name="upload"
-              control={form.control}
-              render={({field, fieldState}) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Foto hochladen (optional)</FieldLabel>
-
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      field.onChange(file);
-
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () =>
-                          setPreview(reader.result as string);
-                        reader.readAsDataURL(file);
-                      } else {
-                        setPreview(undefined);
-                      }
-                    }}
-                    onBlur={field.onBlur}
-                    ref={field.ref}
-                  />
-
-                  {preview && <img src={preview} className="mt-2 rounded" />}
-
-                  <FieldDescription>
-                    Wähle ein Bild von dir aus.
-                  </FieldDescription>
-                  {fieldState.error && (
-                    <FieldError>{fieldState.error.message}</FieldError>
-                  )}
-                </Field>
-              )}
-            /> */}
-
               {Object.entries(questions).map(([key, value]) => {
                 return (
                   key.startsWith("pq") && (
@@ -169,6 +109,45 @@ export default function FreundebuchForm() {
                   )
                 );
               })}
+
+              <Controller
+                name="upload"
+                control={form.control}
+                render={({field, fieldState}) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel>Foto hochladen (optional)</FieldLabel>
+
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        field.onChange(file);
+
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () =>
+                            setPreview(reader.result as string);
+                          reader.readAsDataURL(file);
+                        } else {
+                          setPreview(undefined);
+                        }
+                      }}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+
+                    {preview && <img src={preview} className="mt-2 rounded" />}
+
+                    <FieldDescription>
+                      Wähle ein Bild von dir aus.
+                    </FieldDescription>
+                    {fieldState.error && (
+                      <FieldError>{fieldState.error.message}</FieldError>
+                    )}
+                  </Field>
+                )}
+              />
             </FieldGroup>
           </CardContent>
         </Card>
@@ -207,15 +186,15 @@ export default function FreundebuchForm() {
               })}
             </FieldGroup>
           </CardContent>
-          <CardFooter className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => form.reset()}>
-              Reset
-            </Button>
-            <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
-              Absenden
-            </Button>
-          </CardFooter>
         </Card>
+        <div className="flex justify-end gap-4">
+          <Button variant="outline" onClick={() => form.reset()}>
+            Reset
+          </Button>
+          <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
+            Absenden
+          </Button>
+        </div>
       </form>
     </div>
   );
