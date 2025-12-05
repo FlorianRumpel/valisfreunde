@@ -1,6 +1,10 @@
 "use server";
 
-import {S3Client, PutObjectCommand} from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 
 const r2Client = new S3Client({
   region: "auto",
@@ -26,5 +30,15 @@ export async function uploadImage(file: File) {
     }),
   );
 
-  return `https://${process.env.R2_PUBLIC_ACCOUNT_ID}.r2.cloudflarestorage.com/${fileName}`;
+  // return `https://${process.env.R2_PUBLIC_ACCOUNT_ID}.r2.cloudflarestorage.com/${fileName}`;
+  return `https://pub-69d4cb07f7ab48eeb80c69a6942f922e.r2.dev/${fileName}`;
+}
+
+export async function deleteImage(fileName: string) {
+  await r2Client.send(
+    new DeleteObjectCommand({
+      Bucket: process.env.R2_BUCKET_NAME!,
+      Key: fileName,
+    }),
+  );
 }

@@ -1,0 +1,52 @@
+import Image from "next/image";
+
+function FeedPersonDescription({req}: any) {
+  return (
+    <div key={req.id} className="mb-8 p-4 border rounded-lg">
+      <div className="flex justify-center">
+        <div className=" relative w-60 sm:w-80 md:w-96 aspect-4/4">
+          <Image
+            alt="profile picture"
+            src={req.uploadURL!}
+            fill
+            className="object-cover"
+          />
+        </div>
+      </div>
+      <div>
+        <h2 className="text-2xl font-bold mb-2">{req.pq0}</h2>
+        <p className="mb-1">
+          <strong>Über mich:</strong> {req.pq1}
+        </p>
+        <p className="mb-1">
+          <strong>Lieblingsessen:</strong> {req.pq2}
+        </p>
+        <p className="mb-1">
+          <strong>Verborgenes Talent:</strong> {req.pq3}
+        </p>
+        <p className="mb-1">
+          <strong>Freizeitaktivität:</strong> {req.pq4}
+        </p>
+        <hr className="my-4" />
+        <p className="mb-1">
+          <strong>Über Vali:</strong> {req.vq0}
+        </p>
+        <p className="mb-1">
+          <strong>Was ich an Vali schätze:</strong> {req.vq1}
+        </p>
+        <p className="mb-1">
+          <strong>Lustige Erinnerung mit Vali:</strong> {req.vq2}
+        </p>
+        <p className="mb-1">
+          <strong>Was ich Vali schon immer mal sagen wollte:</strong>
+          {req.vq3}
+        </p>
+        <p className="mb-1">
+          <strong>Wünsche für Valis Zukunft:</strong> {req.vq4}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default FeedPersonDescription;

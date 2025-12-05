@@ -1,56 +1,61 @@
+"use client";
+
+import FeedPersonDescription from "@/components/feed-person";
+
 import prisma from "@/lib/prisma";
 import Image from "next/image";
+import {useEffect, useState} from "react";
 
-async function page() {
-  const friends = await prisma.entry.findMany({
-    orderBy: {pq0: "asc"},
-    where: {published: true},
-  });
+function page() {
+  const [friends, setFriends] = useState<any[]>([]); // <- als leeres Array starten
+  const [loading, setLoading] = useState(true);
+  const [anonId, setAnonId] = useState("");
+
+  useEffect(() => {
+    const ac = new AbortController();
+
+    async function getData() {
+      try {
+        const anonRes = await fetch("/api/get-anonId", {signal: ac.signal});
+        if (anonRes.ok) {
+          const {id} = await anonRes.json();
+          setAnonId(id);
+        } else {
+          console.warn("AnonId API returned", anonRes.status);
+        }
+
+        const postFriendsData = await fetch("/api/feed", {signal: ac.signal});
+        if (!postFriendsData.ok) {
+          console.error("Fehler beim Laden der Posts:", postFriendsData.status);
+          setFriends([]);
+          return;
+        }
+
+        const json = await postFriendsData.json();
+        setFriends(json);
+      } catch (e) {
+        if ((e as any).name === "AbortError") return;
+        console.error("Fetch error:", e);
+        setFriends([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    getData();
+
+    return () => ac.abort();
+  }, []);
+
+  if (loading) return <div className="flex justify-center mt-8">Lädt...</div>;
+
   return (
     <div className="flex flex-col items-center">
       <h1 className="mt-4">Hier findest du Valis Freunde!</h1>
 
-      <div className="w-full mt-4 sm:w-1/2 flex flex-col gap-6 ">
-        {friends.map((friend) => (
-          <div key={friend.id} className="mb-8 p-4 border rounded-lg">
-            <img
-              alt="profile picture"
-              src={friend.uploadURL!}
-              width={300}
-              height={300}
-            />
-            <h2 className="text-2xl font-bold mb-2">{friend.pq0}</h2>
-            <p className="mb-1">
-              <strong>Über mich:</strong> {friend.pq1}
-            </p>
-            <p className="mb-1">
-              <strong>Lieblingsessen:</strong> {friend.pq2}
-            </p>
-            <p className="mb-1">
-              <strong>Verborgenes Talent:</strong> {friend.pq3}
-            </p>
-            <p className="mb-1">
-              <strong>Freizeitaktivität:</strong> {friend.pq4}
-            </p>
-            <hr className="my-4" />
-            <p className="mb-1">
-              {" "}
-              <strong>Über Vali:</strong> {friend.vq0}
-            </p>
-            <p className="mb-1">
-              <strong>Was ich an Vali schätze:</strong> {friend.vq1}
-            </p>
-            <p className="mb-1">
-              <strong>Lustige Erinnerung mit Vali:</strong> {friend.vq2}
-            </p>
-            <p className="mb-1">
-              <strong>Was ich Vali schon immer mal sagen wollte:</strong>{" "}
-              {friend.vq3}
-            </p>
-            <p className="mb-1">
-              <strong>Wünsche für Valis Zukunft:</strong> {friend.vq4}
-            </p>
-          </div>
+      <div className="w-full mt-4 sm:w-[75%] grid grid-cols-1 lg:grid-cols-2 gap-6 ">
+        {friends.map((friend: any) => (
+          <FeedPersonDescription key={friend.id} req={friend} />
         ))}
       </div>
     </div>

@@ -3,7 +3,9 @@ import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import * as z from "zod";
 
-import {useState} from "react";
+import {toast} from "sonner";
+
+import {useRef, useState} from "react";
 import {Button} from "@/components/ui/button";
 import {
   Card,
@@ -30,17 +32,15 @@ export default function FreundebuchForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      pq0: "Florian",
-      pq1: "Ich bin ein freundlicher und hilfsbereiter Mensch.",
-      pq2: "Pizza",
-      pq3: "Ich kann gut jonglieren.",
+      pq0: undefined,
     },
   });
 
   const [preview, setPreview] = useState<string>();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    let imageUrl = "";
+    let imageUrl = "/no-picture.png";
     if (data.upload) {
       imageUrl = await uploadImage(data.upload);
     }
@@ -51,16 +51,24 @@ export default function FreundebuchForm() {
     };
     delete payload.upload;
 
-    console.log("Eintrag gesendet:", payload);
     form.reset();
+    inputRef.current!.value = "";
+    setPreview(undefined);
     try {
       await fetch("/api/submit", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(payload),
       });
+
+      toast.success("Dein Eintrag wurde erfolgreich gesendet!", {
+        position: "top-center",
+        richColors: true,
+        description: "Dein Eintrag wird überprüft werden",
+      });
     } catch (e) {
       console.error(e);
+      toast.error("Etwas ist schief gelaufen. Bitte versuche es erneut.");
     }
   }
 
@@ -70,7 +78,7 @@ export default function FreundebuchForm() {
   return (
     <div className="mb-8 mx-4 flex justify-center flex-col items-center">
       <p className="leading-7 mt-4">
-        Gib dir mühe denn nur die Besten Einträge werden veröffentlicht!
+        Gib dir mühe, denn nur die Besten Einträge werden veröffentlicht!
       </p>
 
       <form
@@ -96,7 +104,12 @@ export default function FreundebuchForm() {
                           <FieldLabel>
                             {key.startsWith("pq") && value}
                           </FieldLabel>
-                          <Textarea placeholder="" {...field} rows={3} />
+
+                          <Textarea
+                            placeholder=""
+                            {...field}
+                            value={field.value ?? ""}
+                          />
                           {fieldState.error && (
                             <FieldError>{fieldState.error.message}</FieldError>
                           )}
@@ -134,7 +147,7 @@ export default function FreundebuchForm() {
                         }
                       }}
                       onBlur={field.onBlur}
-                      ref={field.ref}
+                      ref={inputRef}
                     />
 
                     {preview && <img src={preview} className="mt-2 rounded" />}
@@ -171,7 +184,12 @@ export default function FreundebuchForm() {
                           <FieldLabel>
                             {key.startsWith("vq") && value}
                           </FieldLabel>
-                          <Textarea placeholder="" {...field} rows={3} />
+                          <Textarea
+                            placeholder=""
+                            {...field}
+                            rows={3}
+                            value={field.value ?? ""}
+                          />
                           {fieldState.error && (
                             <FieldError>{fieldState.error.message}</FieldError>
                           )}
@@ -187,15 +205,16 @@ export default function FreundebuchForm() {
             </FieldGroup>
           </CardContent>
         </Card>
-        <div className="flex justify-end gap-4">
-          <Button variant="outline" onClick={() => form.reset()}>
-            Reset
-          </Button>
-          <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
-            Absenden
-          </Button>
-        </div>
       </form>
+
+      <div className="flex justify-end gap-4 mt-4">
+        <Button variant="outline" onClick={() => form.reset()}>
+          Reset
+        </Button>
+        <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
+          Absenden
+        </Button>
+      </div>
     </div>
   );
 }

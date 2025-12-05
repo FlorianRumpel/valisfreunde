@@ -34,7 +34,7 @@ async function page() {
       <form action={onSubmit}>
         <Input type="text" name="username" placeholder="Benutzername" />
 
-        <Input name="password" placeholder="Admin Passwort" />
+        <Input type="password" name="password" placeholder="Admin Passwort" />
 
         <Button type="submit">Login als Admin</Button>
       </form>

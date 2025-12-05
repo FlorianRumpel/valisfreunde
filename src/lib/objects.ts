@@ -10,3 +10,15 @@ export const questions = {
   vq3: "Gibt es etwas, das du Vali schon immer mal sagen wolltest?",
   vq4: "Was wünschst du Vali für die Zukunft?",
 };
+
+export const fieldDescriptions = [
+  "Über mich:",
+  "Lieblingsessen:",
+  "Verborgenes Talent:",
+  "Freizeitaktivität:",
+  "Über Vali:",
+  "Was ich an Vali schätze:",
+  "Lustige Erinnerung mit Vali:",
+  "Was ich Vali schon immer mal sagen wollte:",
+  "Wünsche für Valis Zukunft:",
+];

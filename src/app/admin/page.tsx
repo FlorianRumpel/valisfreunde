@@ -3,6 +3,9 @@ import prisma from "@/lib/prisma";
 import {revalidatePath} from "next/cache";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
+import {deleteImage} from "../actions/upload";
+import Image from "next/image";
+import FeedPersonDescription from "@/components/feed-person";
 
 async function page() {
   const cookieStore = await cookies();
@@ -40,6 +43,9 @@ async function page() {
     "use server";
     const id: number = Number(data.get("id"));
     await prisma.entry.delete({where: {id}});
+
+    const fileName = data.get("uploadURL")?.toString().split("/").pop();
+    deleteImage(fileName!);
     revalidatePath("/admin");
     redirect("/admin");
   }
@@ -56,7 +62,7 @@ async function page() {
       <div className="flex flex-wrap gap-4 p-4">
         {requests.map((req) => (
           <div key={req.id}>
-            <div>Die Anfrage von {req.pq0}</div>
+            <FeedPersonDescription req={req} />
             <div className="flex flex-col gap-4">
               <form action={approve}>
                 <input type="number" hidden defaultValue={req.id} name="id" />
@@ -68,6 +74,13 @@ async function page() {
               </form>
               <form action={deleteEntry}>
                 <input type="number" hidden defaultValue={req.id} name="id" />
+                <input
+                  type="text"
+                  hidden
+                  defaultValue={req.uploadURL!}
+                  name="uploadURL"
+                />
+
                 <Button variant={"destructive"} type="submit">
                   Vollständig und für immer Löschen
                 </Button>
