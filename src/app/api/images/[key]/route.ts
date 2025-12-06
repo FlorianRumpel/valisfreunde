@@ -2,10 +2,9 @@ import {GetObjectCommand} from "@aws-sdk/client-s3";
 import {NextRequest, NextResponse} from "next/server";
 import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
 import {r2Client} from "@/lib/r2client";
-import {NextApiRequest} from "next";
 
 export async function GET(
-  req: NextApiRequest,
+  req: NextRequest,
   {params}: {params: Promise<{key: string}>},
 ) {
   const {key} = await params;
