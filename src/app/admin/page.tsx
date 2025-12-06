@@ -4,7 +4,6 @@ import {revalidatePath} from "next/cache";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 import {deleteImage} from "../actions/upload";
-import Image from "next/image";
 import FeedPersonDescription from "@/components/feed-person";
 
 async function page() {

@@ -208,10 +208,18 @@ export default function FreundebuchForm() {
       </form>
 
       <div className="flex justify-end gap-4 mt-4">
-        <Button variant="outline" onClick={() => form.reset()}>
+        <Button
+          className="active:transition active:scale-90"
+          variant="outline"
+          onClick={() => form.reset()}
+        >
           Reset
         </Button>
-        <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
+        <Button
+          className="active:transition active:scale-90"
+          type="submit"
+          onClick={form.handleSubmit(onSubmit)}
+        >
           Absenden
         </Button>
       </div>

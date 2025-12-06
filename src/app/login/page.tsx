@@ -1,42 +1,34 @@
+"use client";
 import {Button} from "@/components/ui/button";
+import {Card} from "@/components/ui/card";
 import {Input} from "@/components/ui/input";
-import {cookies} from "next/headers";
-import {redirect} from "next/navigation";
 
-async function page() {
-  async function onSubmit(data: FormData) {
-    "use server";
-    const username = data.get("username");
-    const password = data.get("password");
-    console.log(username, password);
-    if (
-      username !== process.env.ADMIN_USERNAME ||
-      password !== process.env.ADMIN_PASSWORD
-    )
-      return;
+import {loginAction} from "../actions/login";
+import {toast} from "sonner";
 
-    const cookieStore = await cookies();
-    cookieStore.set({
-      name: "admin_token",
-      value: process.env.ADMIN_TOKEN!,
-      httpOnly: true,
-      path: "/",
-      secure: true,
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
-    });
-
-    redirect("/admin");
+function page() {
+  async function handle(data: FormData) {
+    const result = await loginAction(data);
+    if (!result) {
+      toast.error("Das Passwort oder der Benutzername ist falsch!", {
+        richColors: true,
+        position: "top-center",
+      });
+    }
   }
 
   return (
-    <div>
-      <form action={onSubmit}>
-        <Input type="text" name="username" placeholder="Benutzername" />
+    <div className="flex justify-center">
+      <form action={handle}>
+        <Card className="w-60 sm:w-80 md:w-96 p-4 mt-4">
+          <Input type="text" name="username" placeholder="Benutzername" />
 
-        <Input type="password" name="password" placeholder="Admin Passwort" />
-
-        <Button type="submit">Login als Admin</Button>
+          <Input type="password" name="password" placeholder="Admin Passwort" />
+          <hr />
+          <Button className="" type="submit">
+            Login als Admin
+          </Button>
+        </Card>
       </form>
     </div>
   );

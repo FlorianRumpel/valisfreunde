@@ -1,9 +1,5 @@
 "use client";
-
 import FeedPersonDescription from "@/components/feed-person";
-
-import prisma from "@/lib/prisma";
-import Image from "next/image";
 import {useEffect, useState} from "react";
 
 function page() {
