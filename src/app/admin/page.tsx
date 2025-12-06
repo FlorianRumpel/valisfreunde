@@ -57,7 +57,10 @@ async function page() {
   }
 
   return (
-    <div className="flex p-4">
+    <div className="flex p-4 flex-col  items-center">
+      <form className="sm:ml-auto " action={logout}>
+        <Button type="submit">Ausloggen</Button>
+      </form>
       <div className="flex flex-wrap gap-4 p-4">
         {requests.map((req) => (
           <div key={req.id}>
@@ -92,9 +95,6 @@ async function page() {
           </div>
         ))}
       </div>
-      <form action={logout}>
-        <Button type="submit">Ausloggen</Button>
-      </form>
     </div>
   );
 }
