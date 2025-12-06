@@ -158,7 +158,14 @@ export default function FreundebuchForm() {
                       />
 
                       {preview && (
-                        <img src={preview} className="mt-2 rounded" />
+                        <div className="max-w-60 md:max-w-96 aspect-square ">
+                          <img
+                            alt="profile picture"
+                            src={preview}
+                            loading="eager"
+                            className="object-cover aspect-square rounded mt-2  mx-auto"
+                          />
+                        </div>
                       )}
 
                       <FieldDescription>

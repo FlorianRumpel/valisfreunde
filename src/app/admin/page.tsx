@@ -5,6 +5,17 @@ import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 import {deleteImage} from "../actions/upload";
 import FeedPersonDescription from "@/components/feed-person";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 
 async function page() {
   const cookieStore = await cookies();
@@ -65,7 +76,7 @@ async function page() {
         {requests.map((req) => (
           <div key={req.id}>
             <FeedPersonDescription req={req} />
-            <div className="flex flex-col gap-4 ml-4">
+            <div className="flex flex-col gap-4 ml-4 items-end">
               <form action={approve}>
                 <input type="number" hidden defaultValue={req.id} name="id" />
                 <Button type="submit">Annehmen und veröffentlichen</Button>
@@ -74,19 +85,44 @@ async function page() {
                 <input type="number" hidden defaultValue={req.id} name="id" />
                 <Button type="submit">Unveröffentlichen</Button>
               </form>
-              <form action={deleteEntry}>
-                <input type="number" hidden defaultValue={req.id} name="id" />
-                <input
-                  type="text"
-                  hidden
-                  defaultValue={req.uploadURL!}
-                  name="uploadURL"
-                />
+              <AlertDialog>
+                <AlertDialogTrigger>
+                  <Button variant="destructive">
+                    Vollständig und für immer Löschen
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Bist du dir wirklich sicher?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Dies kann nicht rückganging gemacht werden!
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                    <AlertDialogAction asChild>
+                      <form action={deleteEntry}>
+                        <input
+                          type="number"
+                          hidden
+                          defaultValue={req.id}
+                          name="id"
+                        />
+                        <input
+                          type="text"
+                          hidden
+                          defaultValue={req.uploadURL!}
+                          name="uploadURL"
+                        />
+                        <Button type="submit">Fortfahren</Button>
+                      </form>
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
 
-                <Button variant={"destructive"} type="submit">
-                  Vollständig und für immer Löschen
-                </Button>
-              </form>
               <p className={req.published ? "text-green-600" : "text-red-600"}>
                 Status:{" "}
                 {req.published ? "Veröffentlicht" : "Nicht veröffentlicht"}
