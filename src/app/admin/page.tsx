@@ -65,7 +65,7 @@ async function page() {
         {requests.map((req) => (
           <div key={req.id}>
             <FeedPersonDescription req={req} />
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 ml-4">
               <form action={approve}>
                 <input type="number" hidden defaultValue={req.id} name="id" />
                 <Button type="submit">Annehmen und veröffentlichen</Button>
@@ -87,11 +87,11 @@ async function page() {
                   Vollständig und für immer Löschen
                 </Button>
               </form>
+              <p className={req.published ? "text-green-600" : "text-red-600"}>
+                Status:{" "}
+                {req.published ? "Veröffentlicht" : "Nicht veröffentlicht"}
+              </p>
             </div>
-            <p className={req.published ? "text-green-600" : "text-red-600"}>
-              Status:{" "}
-              {req.published ? "Veröffentlicht" : "Nicht veröffentlicht"}
-            </p>
           </div>
         ))}
       </div>

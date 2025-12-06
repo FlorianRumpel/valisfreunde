@@ -27,6 +27,7 @@ import {Textarea} from "@/components/ui/textarea";
 import {formSchema} from "@/lib/zod";
 import {questions} from "@/lib/objects";
 import {uploadImage} from "../actions/upload";
+import {Spinner} from "@/components/ui/spinner";
 
 export default function FreundebuchForm() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -38,8 +39,10 @@ export default function FreundebuchForm() {
 
   const [preview, setPreview] = useState<string>();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isloading, setIsLoading] = useState<boolean>(false);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
+    setIsLoading(true);
     let imageUrl = "/no-picture.png";
     if (data.upload) {
       imageUrl = await uploadImage(data.upload);
@@ -60,7 +63,7 @@ export default function FreundebuchForm() {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(payload),
       });
-
+      setIsLoading(false);
       toast.success("Dein Eintrag wurde erfolgreich gesendet!", {
         position: "top-center",
         richColors: true,
@@ -211,7 +214,12 @@ export default function FreundebuchForm() {
         <Button variant="outline" onClick={() => form.reset()}>
           Reset
         </Button>
-        <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
+        <Button
+          disabled={isloading}
+          type="submit"
+          onClick={form.handleSubmit(onSubmit)}
+        >
+          {isloading && <Spinner className="size-6 " />}
           Absenden
         </Button>
       </div>

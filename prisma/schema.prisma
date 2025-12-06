@@ -26,4 +26,6 @@ model Entry {
 
   published Boolean  @default(false)
   createdAt DateTime @default(now())
+
+  likes String[] @default([])
 }

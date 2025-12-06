@@ -2,13 +2,15 @@ import Image from "next/image";
 
 function FeedPersonDescription({req}: any) {
   return (
-    <div key={req.id} className="mb-8 p-4 border rounded-lg">
+    <div key={req.id} className="mb-4 p-4 border rounded-lg mx-4">
       <div className="flex justify-center">
-        <div className=" relative w-60 sm:w-80 md:w-96 aspect-4/4">
+        <div className=" relative w-80  md:w-96 aspect-4/4">
           <Image
             alt="profile picture"
             src={req.uploadURL!}
             fill
+            loading="eager"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover"
           />
         </div>
