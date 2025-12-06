@@ -1,25 +1,28 @@
 "use client";
 import FeedPersonDescription from "@/components/feed-person";
 import {Button} from "@/components/ui/button";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Heart} from "lucide-react";
 import {toggleLike} from "../actions/actions";
+import {Entry} from "@/generated/prisma";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-// Typen (optional, aber hilfreich)
-type Friend = {
-  id: number;
-  // weitere Felder...
-  likes?: string[]; // falls API initial Likes liefert
-};
+type Filters = "most-likes" | "newest" | "oldest";
 
 function Page() {
-  const [friends, setFriends] = useState<Friend[]>([]);
+  const [friends, setFriends] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(true);
   const [anonId, setAnonId] = useState("");
-  // likesPerPost: { [postId]: string[] } -> Liste von anonIds die den Post geliked haben
   const [likesPerPost, setLikesPerPost] = useState<Record<number, string[]>>(
     {},
   );
+  const [filteredFriends, setFilteredFriends] = useState<Entry[]>([]);
 
   useEffect(() => {
     const ac = new AbortController();
@@ -41,12 +44,13 @@ function Page() {
           return;
         }
 
-        const json = await postFriendsData.json();
-        setFriends(json);
+        const friendsData = await postFriendsData.json();
+        setFriends(friendsData);
 
-        // Wenn die API pro Post bereits eine Liste mit Likes (anonIds) liefert, initial setzen:
+        filter("most-likes", friendsData);
+
         const initialLikes: Record<number, string[]> = {};
-        (json as Friend[]).forEach((f: any) => {
+        friendsData.forEach((f: Entry) => {
           initialLikes[f.id] = f.likes ?? [];
         });
         setLikesPerPost(initialLikes);
@@ -77,13 +81,54 @@ function Page() {
     setLikesPerPost((prev) => ({...prev, [postId]: newLikes}));
   }
 
-  if (loading) return <div className="flex justify-center mt-8">Lädt...</div>;
+  function filter(filter: Filters, friendsToFilter?: Entry[]) {
+    const list = friendsToFilter ?? friends;
+    switch (filter) {
+      case "most-likes":
+        setFilteredFriends(
+          [...list].sort((a, b) => b.likes.length - a.likes.length),
+        );
+        break;
+      case "newest":
+        setFilteredFriends(
+          [...list].sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          ),
+        );
+        break;
+      case "oldest":
+        setFilteredFriends(
+          [...list].sort(
+            (a, b) =>
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+          ),
+        );
+        break;
+    }
+  }
 
+  if (loading) return <div className="flex justify-center mt-8">Lädt...</div>;
   return (
     <div className="flex flex-col items-center">
       <h1 className="mt-4">Hier findest du Valis Freunde!</h1>
+      <div className="self-end mr-4 mt-2">
+        <Select
+          defaultValue="most-likes"
+          onValueChange={(value: Filters) => filter(value)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Wähle einen Filter" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="most-likes">Meiste Likes</SelectItem>
+            <SelectItem value="newest">Neuste</SelectItem>
+            <SelectItem value="oldest">Älteste</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       <div className="w-full mt-4 sm:w-[75%] grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {friends.map((friend) => {
+        {filteredFriends.map((friend) => {
           const likedBy = likesPerPost[friend.id] ?? [];
           const isLikedByMe = anonId !== "" && likedBy.includes(anonId);
           const totalLikes = likedBy.length;

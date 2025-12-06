@@ -5,14 +5,24 @@ function FeedPersonDescription({req}: any) {
     <div key={req.id} className="mb-4 p-4 border rounded-lg mx-4">
       <div className="flex justify-center">
         <div className=" relative w-80  md:w-96 aspect-4/4">
-          <Image
-            alt="profile picture"
-            src={req.uploadURL!}
-            fill
-            loading="eager"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover"
-          />
+          {req.uploadURL != "no-picture.png" ? (
+            <img
+              alt="profile picture"
+              src={`/api/images/${req.uploadURL}`}
+              loading="eager"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover w-full h-auto"
+            />
+          ) : (
+            <Image
+              alt="profile picture"
+              src="/no-picture.png"
+              fill
+              loading="eager"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover"
+            />
+          )}
         </div>
       </div>
       <div>
@@ -40,8 +50,7 @@ function FeedPersonDescription({req}: any) {
           <strong>Lustige Erinnerung mit Vali:</strong> {req.vq2}
         </p>
         <p className="mb-1">
-          <strong>Was ich Vali schon immer mal sagen wollte:</strong>
-          {req.vq3}
+          <strong>Was ich Vali schon immer mal sagen wollte:</strong> {req.vq3}
         </p>
         <p className="mb-1">
           <strong>Wünsche für Valis Zukunft:</strong> {req.vq4}

@@ -43,14 +43,14 @@ export default function FreundebuchForm() {
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    let imageUrl = "/no-picture.png";
+    let imageName = "no-picture.png";
     if (data.upload) {
-      imageUrl = await uploadImage(data.upload);
+      imageName = await uploadImage(data.upload);
     }
 
     const payload = {
       ...data,
-      uploadURL: imageUrl,
+      uploadURL: imageName,
     };
     delete payload.upload;
 
@@ -79,149 +79,157 @@ export default function FreundebuchForm() {
   type QuestionKeys = Extract<FormKeys, `pq${string}` | `vq${string}`>;
 
   return (
-    <div className="mb-8 mx-4 flex justify-center flex-col items-center">
+    <div className="mb-8 mx-4 flex  flex-col items-center">
       <p className="leading-7 mt-4">
         Gib dir mühe, denn nur die Besten Einträge werden veröffentlicht!
       </p>
+      <div className="w-full sm:w-1/2 mt-4 flex flex-col gap-6 items-center">
+        <form
+          className="w-full mt-4  flex flex-col gap-6 "
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Beantworte zuerst ein Paar fragen über dich!
+              </CardTitle>
+              <CardDescription>Fülle alles sorgfältig aus.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FieldGroup>
+                {Object.entries(questions).map(([key, value]) => {
+                  return (
+                    key.startsWith("pq") && (
+                      <Controller
+                        key={key}
+                        name={key as QuestionKeys}
+                        control={form.control}
+                        render={({field, fieldState}) => (
+                          <Field data-invalid={fieldState.invalid}>
+                            <FieldLabel>
+                              {key.startsWith("pq") && value}
+                            </FieldLabel>
 
-      <form
-        className="w-full mt-4 sm:w-1/2 flex flex-col gap-6 "
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle>Beantworte zuerst ein Paar fragen über dich!</CardTitle>
-            <CardDescription>Fülle alles sorgfältig aus.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <FieldGroup>
-              {Object.entries(questions).map(([key, value]) => {
-                return (
-                  key.startsWith("pq") && (
-                    <Controller
-                      key={key}
-                      name={key as QuestionKeys}
-                      control={form.control}
-                      render={({field, fieldState}) => (
-                        <Field data-invalid={fieldState.invalid}>
-                          <FieldLabel>
-                            {key.startsWith("pq") && value}
-                          </FieldLabel>
-
-                          <Textarea
-                            placeholder=""
-                            {...field}
-                            value={field.value ?? ""}
-                          />
-                          {fieldState.error && (
-                            <FieldError>{fieldState.error.message}</FieldError>
-                          )}
-                          {/* <FieldDescription>
+                            <Textarea
+                              placeholder=""
+                              {...field}
+                              value={field.value ?? ""}
+                            />
+                            {fieldState.error && (
+                              <FieldError>
+                                {fieldState.error.message}
+                              </FieldError>
+                            )}
+                            {/* <FieldDescription>
                         Optional: Schreibe etwas Lustiges oder Nettes.
                       </FieldDescription> */}
-                        </Field>
+                          </Field>
+                        )}
+                      />
+                    )
+                  );
+                })}
+
+                <Controller
+                  name="upload"
+                  control={form.control}
+                  render={({field, fieldState}) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel>Foto hochladen (optional)</FieldLabel>
+
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          field.onChange(file);
+
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () =>
+                              setPreview(reader.result as string);
+                            reader.readAsDataURL(file);
+                          } else {
+                            setPreview(undefined);
+                          }
+                        }}
+                        onBlur={field.onBlur}
+                        ref={inputRef}
+                      />
+
+                      {preview && (
+                        <img src={preview} className="mt-2 rounded" />
                       )}
-                    />
-                  )
-                );
-              })}
 
-              <Controller
-                name="upload"
-                control={form.control}
-                render={({field, fieldState}) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel>Foto hochladen (optional)</FieldLabel>
+                      <FieldDescription>
+                        Wähle ein Bild von dir aus.
+                      </FieldDescription>
+                      {fieldState.error && (
+                        <FieldError>{fieldState.error.message}</FieldError>
+                      )}
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
+            </CardContent>
+          </Card>
 
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        field.onChange(file);
-
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onloadend = () =>
-                            setPreview(reader.result as string);
-                          reader.readAsDataURL(file);
-                        } else {
-                          setPreview(undefined);
-                        }
-                      }}
-                      onBlur={field.onBlur}
-                      ref={inputRef}
-                    />
-
-                    {preview && <img src={preview} className="mt-2 rounded" />}
-
-                    <FieldDescription>
-                      Wähle ein Bild von dir aus.
-                    </FieldDescription>
-                    {fieldState.error && (
-                      <FieldError>{fieldState.error.message}</FieldError>
-                    )}
-                  </Field>
-                )}
-              />
-            </FieldGroup>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Jetzt beantworte ein Paar fragen zu Vali!</CardTitle>
-            <CardDescription>Fülle alles sorgfältig aus.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <FieldGroup>
-              {Object.entries(questions).map(([key, value]) => {
-                return (
-                  key.startsWith("vq") && (
-                    <Controller
-                      key={key}
-                      name={key as QuestionKeys}
-                      control={form.control}
-                      render={({field, fieldState}) => (
-                        <Field data-invalid={fieldState.invalid}>
-                          <FieldLabel>
-                            {key.startsWith("vq") && value}
-                          </FieldLabel>
-                          <Textarea
-                            placeholder=""
-                            {...field}
-                            rows={3}
-                            value={field.value ?? ""}
-                          />
-                          {fieldState.error && (
-                            <FieldError>{fieldState.error.message}</FieldError>
-                          )}
-                          {/* <FieldDescription>
+          <Card>
+            <CardHeader>
+              <CardTitle>Jetzt beantworte ein Paar fragen zu Vali!</CardTitle>
+              <CardDescription>Fülle alles sorgfältig aus.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FieldGroup>
+                {Object.entries(questions).map(([key, value]) => {
+                  return (
+                    key.startsWith("vq") && (
+                      <Controller
+                        key={key}
+                        name={key as QuestionKeys}
+                        control={form.control}
+                        render={({field, fieldState}) => (
+                          <Field data-invalid={fieldState.invalid}>
+                            <FieldLabel>
+                              {key.startsWith("vq") && value}
+                            </FieldLabel>
+                            <Textarea
+                              placeholder=""
+                              {...field}
+                              rows={3}
+                              value={field.value ?? ""}
+                            />
+                            {fieldState.error && (
+                              <FieldError>
+                                {fieldState.error.message}
+                              </FieldError>
+                            )}
+                            {/* <FieldDescription>
                           Optional: Schreibe etwas Lustiges oder Nettes.
                         </FieldDescription> */}
-                        </Field>
-                      )}
-                    />
-                  )
-                );
-              })}
-            </FieldGroup>
-          </CardContent>
-        </Card>
-      </form>
-
-      <div className="flex justify-end gap-4 mt-4">
-        <Button variant="outline" onClick={() => form.reset()}>
-          Reset
-        </Button>
-        <Button
-          disabled={isloading}
-          type="submit"
-          onClick={form.handleSubmit(onSubmit)}
-        >
-          {isloading && <Spinner className="size-6 " />}
-          Absenden
-        </Button>
+                          </Field>
+                        )}
+                      />
+                    )
+                  );
+                })}
+              </FieldGroup>
+            </CardContent>
+          </Card>
+        </form>
+        <div className="flex self-end gap-4 mt-4">
+          <Button variant="outline" onClick={() => form.reset()}>
+            Reset
+          </Button>
+          <Button
+            disabled={isloading}
+            type="submit"
+            onClick={form.handleSubmit(onSubmit)}
+          >
+            {isloading && <Spinner className="size-6 " />}
+            Absenden
+          </Button>
+        </div>
       </div>
     </div>
   );
