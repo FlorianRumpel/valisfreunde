@@ -6,6 +6,7 @@ import Link from "next/link";
 import LikeButton from "@/components/like-button";
 import prisma from "@/lib/prisma";
 import SelectFilter from "@/components/select-filter";
+import {filterPosts} from "@/lib/utils";
 
 export const revalidate = 30;
 
@@ -15,7 +16,6 @@ async function Page({searchParams}: any) {
   });
 
   const rawFilter = (await searchParams).filter ?? "most-likes";
-
   const filter: Filters =
     rawFilter === "most-likes" ||
     rawFilter === "newest" ||
@@ -23,28 +23,6 @@ async function Page({searchParams}: any) {
       ? rawFilter
       : "most-likes";
 
-  function filterPosts(filter: Filters) {
-    let filteredFriends = [];
-    switch (filter) {
-      case "most-likes":
-        filteredFriends = friends.sort(
-          (a, b) => b.likes.length - a.likes.length,
-        );
-        break;
-      case "newest":
-        filteredFriends = friends.sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        );
-        break;
-      case "oldest":
-        filteredFriends = friends.sort(
-          (a, b) =>
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-        );
-    }
-    return filteredFriends;
-  }
   return (
     <div className="flex flex-col items-center mt-4 relative">
       <Link href={"/"} className="absolute left-4">
@@ -60,7 +38,7 @@ async function Page({searchParams}: any) {
       </div>
 
       <div className="w-full mt-4 sm:w-[75%] grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {filterPosts(filter).map((friend) => {
+        {filterPosts(filter, friends).map((friend) => {
           return (
             <div className="flex flex-col px-4 mb-4" key={friend.id}>
               <FeedPersonDescription req={friend} />

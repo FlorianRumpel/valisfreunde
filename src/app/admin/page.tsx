@@ -16,20 +16,26 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-import {ButtonGroup} from "@/components/ui/button-group";
 import {Eye, EyeOff, Trash2} from "lucide-react";
-import {cn} from "@/lib/utils";
 import ActionButton from "@/components/action-button";
+import {filterPosts} from "@/lib/utils";
+import SelectFilter from "@/components/select-filter";
 
-async function page() {
+async function page({searchParams}: any) {
   const cookieStore = await cookies();
+  const rawFilter = (await searchParams).filter ?? "most-likes";
+  const filter: Filters =
+    rawFilter === "most-likes" ||
+    rawFilter === "newest" ||
+    rawFilter === "oldest"
+      ? rawFilter
+      : "most-likes";
 
   if (
     cookieStore.get("admin_token") == undefined ||
     cookieStore.get("admin_token")?.value !== process.env.ADMIN_TOKEN
-  ) {
+  )
     redirect("/login");
-  }
 
   const requests = await prisma.entry.findMany({orderBy: {pq0: "asc"}});
 
@@ -64,8 +70,9 @@ async function page() {
       <form className="sm:ml-auto " action={logout}>
         <Button type="submit">Ausloggen</Button>
       </form>
+      <SelectFilter filter={filter} />
       <div className="w-full mt-4 sm:w-[75%] grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {requests.map((req) => (
+        {filterPosts(filter, requests).map((req) => (
           <div key={req.id}>
             <FeedPersonDescription req={req} />
             <div className="flex justify-between">
