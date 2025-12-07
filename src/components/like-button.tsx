@@ -1,12 +1,24 @@
+"use client";
 import {toggleLike} from "@/app/actions/actions";
 import {Entry} from "@/generated/prisma";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Button} from "./ui/button";
 import {Heart} from "lucide-react";
+import {randomUUID} from "crypto";
 
-function LikeButton({friend, anonId}: {friend: Entry; anonId: string}) {
+function LikeButton({friend}: {friend: Entry}) {
   const [likesPerPost, setLikesPerPost] = useState<string[]>(friend.likes);
   const [likeButtonDisabled, setLikeButtonDisabled] = useState<boolean>(false);
+  const [anonId, setAnonId] = useState("");
+
+  useEffect(() => {
+    async function getData() {
+      const json = await fetch("/api/get-anonId");
+      const data = await json.json();
+      setAnonId(data.id);
+    }
+    getData();
+  }, []);
 
   const isLikedByMe = anonId !== "" && likesPerPost.includes(anonId);
   const totalLikes = likesPerPost.length;
