@@ -5,7 +5,7 @@ import {redirect} from "next/navigation";
 export async function loginAction(data: FormData) {
   const username = data.get("username");
   const password = data.get("password");
-  console.log(username, password);
+
   if (
     username !== process.env.ADMIN_USERNAME ||
     password !== process.env.ADMIN_PASSWORD

@@ -14,10 +14,17 @@ function SelectFilter() {
   function setFilter(filter: Filters) {
     router.push(`?filter=${filter}`);
   }
+  const rawFilter = searchParams.get("filter") ?? "most-likes";
 
+  const filter: Filters =
+    rawFilter === "most-likes" ||
+    rawFilter === "newest" ||
+    rawFilter === "oldest"
+      ? rawFilter
+      : "most-likes";
   return (
     <Select
-      defaultValue={searchParams.get("filter") ?? "most-likes"}
+      defaultValue={filter}
       onValueChange={(value: Filters) => setFilter(value)}
     >
       <SelectTrigger>

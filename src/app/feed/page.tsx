@@ -8,6 +8,7 @@ import LikeButton from "@/components/like-button";
 
 import SelectFilter from "@/components/select-filter";
 import prisma from "@/lib/prisma";
+export const revalidate = 5;
 
 async function Page({searchParams}: any) {
   const friends: Entry[] = await prisma.entry.findMany({
@@ -15,7 +16,6 @@ async function Page({searchParams}: any) {
   });
 
   const rawFilter = (await searchParams).filter ?? "most-likes";
-  console.log(rawFilter);
 
   const filter: Filters =
     rawFilter === "most-likes" ||
@@ -46,7 +46,6 @@ async function Page({searchParams}: any) {
     }
     return filteredFriends;
   }
-
   return (
     <div className="flex flex-col items-center mt-4 relative">
       <Link href={"/"} className="absolute left-4">

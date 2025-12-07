@@ -82,15 +82,18 @@ export default function FreundebuchForm() {
 
   return (
     <div className="mb-8 mx-4 flex  flex-col items-center">
-      <Link href={"/"} className="absolute left-4 top-4">
-        <Button>
-          <ArrowLeft />
-        </Button>
-      </Link>
+      <div className="flex items-center mt-4">
+        <Link href={"/"} className="md:absolute md:left-4 md:top-4 mr-8">
+          <Button>
+            <ArrowLeft />
+          </Button>
+        </Link>
 
-      <p className="leading-7 mt-4">
-        Gib dir mühe, denn nur die Besten Einträge werden veröffentlicht!
-      </p>
+        <p className="leading-7 ">
+          Gib dir mühe, denn nur die Besten Einträge werden veröffentlicht!
+        </p>
+      </div>
+
       <div className="w-full sm:w-1/2 mt-4 flex flex-col gap-6 items-center">
         <form
           className="w-full mt-4  flex flex-col gap-6 "
