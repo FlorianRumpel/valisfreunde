@@ -16,6 +16,18 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Valis Freunde",
   description: "Das Freundebuch für Vali",
+  icons: [
+    {
+      rel: "icon",
+      url: "/favicon-light.ico",
+      media: "(prefers-color-scheme:light)",
+    },
+    {
+      rel: "icon",
+      url: "/favicon-dark.ico",
+      media: "(prefers-color-scheme:dark)",
+    },
+  ],
 };
 
 export default function RootLayout({

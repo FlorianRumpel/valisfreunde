@@ -3,15 +3,16 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="grid gap-4 mt-4 justify-center items-center w-full ">
+    <div className="flex flex-col gap-4 mt-4 justify-center items-center w-full ">
       <p>Willkommen zu Valis Freundebuch!</p>
 
-      <Button>
-        <Link href={"/form"}>Sende eine Freundesanfrage</Link>
-      </Button>
-      <Button>
-        <Link href={"/feed"}>Schaue dir Valis Freunde an</Link>
-      </Button>
+      <Link href={"/form"}>
+        <Button>Sende eine Freundesanfrage</Button>
+      </Link>
+
+      <Link href={"/feed"}>
+        <Button variant={"secondary"}>Schaue dir Valis Freunde an</Button>
+      </Link>
     </div>
   );
 }

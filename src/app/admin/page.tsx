@@ -16,6 +16,9 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
+import {ButtonGroup} from "@/components/ui/button-group";
+import {Eye, EyeOff, Trash2} from "lucide-react";
+import {cn} from "@/lib/utils";
 
 async function page() {
   const cookieStore = await cookies();
@@ -29,22 +32,15 @@ async function page() {
 
   const requests = await prisma.entry.findMany({orderBy: {pq0: "asc"}});
 
-  async function approve(data: FormData) {
+  async function togglePublish(data: FormData) {
     "use server";
 
     const id: number = Number(data.get("id"));
+    const entry = await prisma.entry.findUnique({where: {id}});
     await prisma.entry.update({
       where: {id},
-      data: {published: true},
+      data: {published: !entry?.published},
     });
-    revalidatePath("/admin");
-    redirect("/admin");
-  }
-
-  async function unpublish(data: FormData) {
-    "use server";
-    const id: number = Number(data.get("id"));
-    await prisma.entry.update({where: {id}, data: {published: false}});
     revalidatePath("/admin");
     redirect("/admin");
   }
@@ -76,19 +72,31 @@ async function page() {
         {requests.map((req) => (
           <div key={req.id}>
             <FeedPersonDescription req={req} />
-            <div className="flex flex-col gap-4 ml-4 items-end">
-              <form action={approve}>
+            <div className="flex justify-between">
+              <form action={togglePublish} className={"flex items-center"}>
                 <input type="number" hidden defaultValue={req.id} name="id" />
-                <Button type="submit">Annehmen und veröffentlichen</Button>
-              </form>
-              <form action={unpublish}>
-                <input type="number" hidden defaultValue={req.id} name="id" />
-                <Button type="submit">Unveröffentlichen</Button>
+                <Button
+                  type="submit"
+                  variant={"outline"}
+                  className={cn(
+                    req.published
+                      ? "text-green-600 hover:text-green-600"
+                      : "text-red-600 hover:text-red-600",
+                    "hover:scale-90",
+                  )}
+                >
+                  {req.published ? (
+                    <Eye className="mr-2 h-4 w-4" />
+                  ) : (
+                    <EyeOff className="mr-2 h-4 w-4" />
+                  )}
+                  {req.published ? "Veröffentlicht" : "Nicht veröffentlicht"}
+                </Button>
               </form>
               <AlertDialog>
                 <AlertDialogTrigger>
                   <Button variant="destructive">
-                    Vollständig und für immer Löschen
+                    <Trash2 />
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -122,11 +130,6 @@ async function page() {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-
-              <p className={req.published ? "text-green-600" : "text-red-600"}>
-                Status:{" "}
-                {req.published ? "Veröffentlicht" : "Nicht veröffentlicht"}
-              </p>
             </div>
           </div>
         ))}

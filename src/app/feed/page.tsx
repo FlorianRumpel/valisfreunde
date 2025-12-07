@@ -2,8 +2,7 @@
 import FeedPersonDescription from "@/components/feed-person";
 import {Button} from "@/components/ui/button";
 import {useEffect, useRef, useState} from "react";
-import {Heart} from "lucide-react";
-import {toggleLike} from "../actions/actions";
+import {ArrowLeft} from "lucide-react";
 import {Entry} from "@/generated/prisma";
 import {
   Select,
@@ -12,6 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Link from "next/link";
+import LikeButton from "@/components/like-button";
 
 type Filters = "most-likes" | "newest" | "oldest";
 
@@ -19,9 +20,11 @@ function Page() {
   const [friends, setFriends] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(true);
   const [anonId, setAnonId] = useState("");
+
   const [likesPerPost, setLikesPerPost] = useState<Record<number, string[]>>(
     {},
   );
+
   const [filteredFriends, setFilteredFriends] = useState<Entry[]>([]);
 
   useEffect(() => {
@@ -37,7 +40,10 @@ function Page() {
           console.warn("AnonId API returned", anonRes.status);
         }
 
-        const postFriendsData = await fetch("/api/feed", {signal: ac.signal});
+        const postFriendsData = await fetch("/api/feed", {
+          signal: ac.signal,
+          cache: "no-store",
+        });
         if (!postFriendsData.ok) {
           console.error("Fehler beim Laden der Posts:", postFriendsData.status);
           setFriends([]);
@@ -67,20 +73,6 @@ function Page() {
     return () => ac.abort();
   }, []);
 
-  async function like(postId: number) {
-    if (!anonId) {
-      console.warn("anonId fehlt noch");
-      return;
-    }
-
-    // toggleLike erwartet (anonId, postId) und soll idealerweise die aktuelle Liste der userIds zurückgeben
-    const newLikes = await toggleLike(anonId, postId);
-    // newLikes sollte ein string[] sein (Liste von anonIds), ansonsten passe an
-    if (!newLikes) return;
-
-    setLikesPerPost((prev) => ({...prev, [postId]: newLikes}));
-  }
-
   function filter(filter: Filters, friendsToFilter?: Entry[]) {
     const list = friendsToFilter ?? friends;
     switch (filter) {
@@ -108,11 +100,17 @@ function Page() {
     }
   }
 
-  if (loading) return <div className="flex justify-center mt-8">Lädt...</div>;
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="mt-4">Hier findest du Valis Freunde!</h1>
-      <div className="self-end mr-4 mt-2">
+    <div className="flex flex-col items-center mt-4">
+      <Link href={"/"} className="absolute left-4 top-4">
+        <Button>
+          <ArrowLeft />
+        </Button>
+      </Link>
+
+      <div className="flex flex-col items-center gap-4 sm:flex-row ">
+        <h1 className="">Hier findest du Valis Freunde!</h1>
+
         <Select
           defaultValue="most-likes"
           onValueChange={(value: Filters) => filter(value)}
@@ -129,32 +127,14 @@ function Page() {
       </div>
       <div className="w-full mt-4 sm:w-[75%] grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filteredFriends.map((friend) => {
-          const likedBy = likesPerPost[friend.id] ?? [];
-          const isLikedByMe = anonId !== "" && likedBy.includes(anonId);
-          const totalLikes = likedBy.length;
           return (
-            <div className="flex flex-col" key={friend.id}>
+            <div className="flex flex-col px-4 mb-4" key={friend.id}>
               <FeedPersonDescription req={friend} />
-              <Button onClick={() => like(friend.id)} className="ml-auto mr-4">
-                {totalLikes == 0 ? "" : totalLikes}
-                {isLikedByMe ? (
-                  // gefüllt ohne Outline; Größe via Tailwind
-                  <Heart
-                    fill="red"
-                    stroke="none"
-                    className="w-6 h-6"
-                    aria-label="Gefällt mir"
-                  />
-                ) : (
-                  // transparent fill + sichtbare Stroke (Outline)
-                  <Heart
-                    fill="transparent"
-                    strokeWidth={2}
-                    className="w-6 h-6"
-                    aria-label="Gefällt mir"
-                  />
-                )}
-              </Button>
+              <LikeButton
+                friend={friend}
+                initialLikes={likesPerPost}
+                anonId={anonId}
+              />
             </div>
           );
         })}

@@ -28,6 +28,8 @@ import {formSchema} from "@/lib/zod";
 import {questions} from "@/lib/objects";
 import {uploadImage} from "../actions/upload";
 import {Spinner} from "@/components/ui/spinner";
+import Link from "next/link";
+import {ArrowLeft} from "lucide-react";
 
 export default function FreundebuchForm() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -80,6 +82,12 @@ export default function FreundebuchForm() {
 
   return (
     <div className="mb-8 mx-4 flex  flex-col items-center">
+      <Link href={"/"} className="absolute left-4 top-4">
+        <Button>
+          <ArrowLeft />
+        </Button>
+      </Link>
+
       <p className="leading-7 mt-4">
         Gib dir mühe, denn nur die Besten Einträge werden veröffentlicht!
       </p>

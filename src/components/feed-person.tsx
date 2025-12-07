@@ -2,7 +2,7 @@ import Image from "next/image";
 
 function FeedPersonDescription({req}: any) {
   return (
-    <div key={req.id} className="mb-4 p-4 border rounded-lg mx-4">
+    <div key={req.id} className="mb-4 p-4 border rounded-lg ">
       <div className="flex justify-center">
         <div className="relative w-80  md:w-96 aspect-4/4">
           {req.uploadURL != "no-picture.png" ? (
