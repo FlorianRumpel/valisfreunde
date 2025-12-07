@@ -19,6 +19,7 @@ import {
 import {ButtonGroup} from "@/components/ui/button-group";
 import {Eye, EyeOff, Trash2} from "lucide-react";
 import {cn} from "@/lib/utils";
+import ActionButton from "@/components/action-button";
 
 async function page() {
   const cookieStore = await cookies();
@@ -32,28 +33,23 @@ async function page() {
 
   const requests = await prisma.entry.findMany({orderBy: {pq0: "asc"}});
 
-  async function togglePublish(data: FormData) {
+  async function togglePublish(id: number, uploadURL: string) {
     "use server";
 
-    const id: number = Number(data.get("id"));
     const entry = await prisma.entry.findUnique({where: {id}});
     await prisma.entry.update({
       where: {id},
       data: {published: !entry?.published},
     });
     revalidatePath("/admin");
-    redirect("/admin");
   }
 
-  async function deleteEntry(data: FormData) {
+  async function deleteEntry(id: number, uploadURL: string) {
     "use server";
-    const id: number = Number(data.get("id"));
     await prisma.entry.delete({where: {id}});
 
-    const fileName = data.get("uploadURL")?.toString().split("/").pop();
-    deleteImage(fileName!);
+    deleteImage(uploadURL);
     revalidatePath("/admin");
-    redirect("/admin");
   }
 
   async function logout() {
@@ -68,33 +64,33 @@ async function page() {
       <form className="sm:ml-auto " action={logout}>
         <Button type="submit">Ausloggen</Button>
       </form>
-      <div className="flex flex-wrap gap-4 p-4">
+      <div className="w-full mt-4 sm:w-[75%] grid grid-cols-1 lg:grid-cols-2 gap-6">
         {requests.map((req) => (
           <div key={req.id}>
             <FeedPersonDescription req={req} />
             <div className="flex justify-between">
-              <form action={togglePublish} className={"flex items-center"}>
-                <input type="number" hidden defaultValue={req.id} name="id" />
-                <Button
-                  type="submit"
-                  variant={"outline"}
-                  className={cn(
-                    req.published
-                      ? "text-green-600 hover:text-green-600"
-                      : "text-red-600 hover:text-red-600",
-                    "hover:scale-90",
-                  )}
-                >
-                  {req.published ? (
-                    <Eye className="mr-2 h-4 w-4" />
-                  ) : (
-                    <EyeOff className="mr-2 h-4 w-4" />
-                  )}
-                  {req.published ? "Veröffentlicht" : "Nicht veröffentlicht"}
-                </Button>
-              </form>
+              <ActionButton
+                variant={"outline"}
+                id={req.id}
+                uploadURL={req.uploadURL!}
+                action={togglePublish}
+                className={`${
+                  req.published
+                    ? "text-green-600 hover:text-green-600"
+                    : "text-red-600 hover:text-red-600"
+                },
+                    "hover:scale-90"`}
+              >
+                {req.published ? (
+                  <Eye className="mr-2 h-4 w-4" />
+                ) : (
+                  <EyeOff className="mr-2 h-4 w-4" />
+                )}
+                {req.published ? "Veröffentlicht" : "Nicht veröffentlicht"}
+              </ActionButton>
+
               <AlertDialog>
-                <AlertDialogTrigger>
+                <AlertDialogTrigger asChild>
                   <Button variant="destructive">
                     <Trash2 />
                   </Button>
@@ -111,21 +107,11 @@ async function page() {
                   <AlertDialogFooter>
                     <AlertDialogCancel>Abbrechen</AlertDialogCancel>
                     <AlertDialogAction asChild>
-                      <form action={deleteEntry}>
-                        <input
-                          type="number"
-                          hidden
-                          defaultValue={req.id}
-                          name="id"
-                        />
-                        <input
-                          type="text"
-                          hidden
-                          defaultValue={req.uploadURL!}
-                          name="uploadURL"
-                        />
-                        <Button type="submit">Fortfahren</Button>
-                      </form>
+                      <ActionButton
+                        action={deleteEntry}
+                        id={req.id}
+                        uploadURL={req.uploadURL!}
+                      />
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>

@@ -64,7 +64,7 @@ function loading() {
 
       <div className="flex flex-col items-center gap-4 sm:flex-row ">
         <h1 className="">Hier findest du Valis Freunde!</h1>
-        <SelectFilter />
+        <SelectFilter filter="most-likes" />
       </div>
       <div className="w-full mt-4 sm:w-[75%] grid grid-cols-1 lg:grid-cols-2 gap-6">
         {friends.map((friend) => {

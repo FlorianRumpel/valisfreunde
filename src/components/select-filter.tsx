@@ -8,20 +8,12 @@ import {
   SelectValue,
 } from "./ui/select";
 
-function SelectFilter() {
+function SelectFilter({filter}: {filter: Filters}) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   function setFilter(filter: Filters) {
     router.push(`?filter=${filter}`);
   }
-  const rawFilter = searchParams.get("filter") ?? "most-likes";
 
-  const filter: Filters =
-    rawFilter === "most-likes" ||
-    rawFilter === "newest" ||
-    rawFilter === "oldest"
-      ? rawFilter
-      : "most-likes";
   return (
     <Select
       defaultValue={filter}

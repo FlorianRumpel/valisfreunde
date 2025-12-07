@@ -2,14 +2,12 @@ import FeedPersonDescription from "@/components/feed-person";
 import {Button} from "@/components/ui/button";
 import {ArrowLeft} from "lucide-react";
 import {Entry} from "@/generated/prisma";
-
 import Link from "next/link";
 import LikeButton from "@/components/like-button";
-
-import SelectFilter from "@/components/select-filter";
 import prisma from "@/lib/prisma";
-import {Suspense} from "react";
-export const revalidate = 5;
+import SelectFilter from "@/components/select-filter";
+
+export const revalidate = 30;
 
 async function Page({searchParams}: any) {
   const friends: Entry[] = await prisma.entry.findMany({
@@ -57,10 +55,10 @@ async function Page({searchParams}: any) {
 
       <div className="flex flex-col items-center gap-4 sm:flex-row ">
         <h1 className="">Hier findest du Valis Freunde!</h1>
-        <Suspense>
-          <SelectFilter />
-        </Suspense>
+
+        <SelectFilter filter={filter} />
       </div>
+
       <div className="w-full mt-4 sm:w-[75%] grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filterPosts(filter).map((friend) => {
           return (
