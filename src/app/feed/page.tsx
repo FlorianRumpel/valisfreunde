@@ -1,7 +1,7 @@
 "use client";
 import FeedPersonDescription from "@/components/feed-person";
 import {Button} from "@/components/ui/button";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import {ArrowLeft} from "lucide-react";
 import {Entry} from "@/generated/prisma";
 import {
@@ -110,7 +110,6 @@ function Page() {
 
       <div className="flex flex-col items-center gap-4 sm:flex-row ">
         <h1 className="">Hier findest du Valis Freunde!</h1>
-
         <Select
           defaultValue="most-likes"
           onValueChange={(value: Filters) => filter(value)}
@@ -130,11 +129,7 @@ function Page() {
           return (
             <div className="flex flex-col px-4 mb-4" key={friend.id}>
               <FeedPersonDescription req={friend} />
-              <LikeButton
-                friend={friend}
-                initialLikes={likesPerPost}
-                anonId={anonId}
-              />
+              <LikeButton friend={friend} anonId={anonId} />
             </div>
           );
         })}

@@ -4,45 +4,26 @@ import {useState} from "react";
 import {Button} from "./ui/button";
 import {Heart} from "lucide-react";
 
-function LikeButton({
-  friend,
-  anonId,
-  initialLikes,
-}: {
-  friend: Entry;
-  anonId: string;
-  initialLikes: Record<number, string[]>;
-}) {
-  const [likesPerPost, setLikesPerPost] =
-    useState<Record<number, string[]>>(initialLikes);
+function LikeButton({friend, anonId}: {friend: Entry; anonId: string}) {
+  const [likesPerPost, setLikesPerPost] = useState<string[]>(friend.likes);
+  const [likeButtonDisabled, setLikeButtonDisabled] = useState<boolean>(false);
 
-  const [likeButtonDisabled, setLikeButtonDisabled] = useState<
-    Record<number, boolean>
-  >({});
-
-  const likedBy = likesPerPost[friend.id] ?? [];
-  const isLikedByMe = anonId !== "" && likedBy.includes(anonId);
-  const totalLikes = likedBy.length;
+  const isLikedByMe = anonId !== "" && likesPerPost.includes(anonId);
+  const totalLikes = likesPerPost.length;
 
   async function like(postId: number) {
-    setLikeButtonDisabled((prev) => ({...prev, [postId]: true}));
-    if (!anonId) {
-      console.warn("anonId fehlt noch");
-      return;
-    }
+    setLikeButtonDisabled(true);
     const newLikes = await toggleLike(anonId, postId);
     if (!newLikes) return;
-    setLikesPerPost((prev) => ({...prev, [postId]: newLikes}));
-    setLikeButtonDisabled((prev) => ({...prev, [postId]: false}));
+    setLikesPerPost(newLikes);
+    setLikeButtonDisabled(false);
   }
 
   return (
     <div>
       <Button
         onClick={() => like(friend.id)}
-        disabled={
-          likeButtonDisabled[friend.id] ? likeButtonDisabled[friend.id] : false
-        }
+        disabled={likeButtonDisabled}
         className="ml-auto mr-4"
       >
         {totalLikes == 0 ? "" : totalLikes}
