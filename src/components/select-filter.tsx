@@ -11,7 +11,7 @@ import {
 function SelectFilter({filter}: {filter: Filters}) {
   const router = useRouter();
   function setFilter(filter: Filters) {
-    router.push(`?filter=${filter}`);
+    router.replace(`?filter=${filter}`);
   }
 
   return (

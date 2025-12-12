@@ -1,6 +1,5 @@
 import {GetObjectCommand} from "@aws-sdk/client-s3";
 import {NextRequest, NextResponse} from "next/server";
-import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
 import {r2Client} from "@/lib/r2client";
 
 export async function GET(
@@ -15,11 +14,13 @@ export async function GET(
       Bucket: process.env.R2_BUCKET_NAME,
       Key: key,
     });
-    const url = await getSignedUrl(r2Client, command, {expiresIn: 60});
 
-    return NextResponse.redirect(url, {
+    const res = await r2Client.send(command);
+
+    return new Response(res.Body as any, {
       headers: {
-        "Cache-control": "public, max-age=30",
+        "Content-Type": res.ContentType ?? "image/jpeg",
+        "Cache-Control": "public, max-age=31536000, immutable",
       },
     });
   } catch (err) {

@@ -37,7 +37,7 @@ async function page({searchParams}: any) {
   )
     redirect("/login");
 
-  const requests = await prisma.entry.findMany({orderBy: {pq0: "asc"}});
+  const requests = await prisma.entry.findMany();
 
   async function togglePublish(id: number, uploadURL: string) {
     "use server";
@@ -118,7 +118,9 @@ async function page({searchParams}: any) {
                         action={deleteEntry}
                         id={req.id}
                         uploadURL={req.uploadURL!}
-                      />
+                      >
+                        Fortfahren
+                      </ActionButton>
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>

@@ -1,12 +1,13 @@
-import {Entry} from "@/generated/prisma";
 import {clsx, type ClassValue} from "clsx";
 import {twMerge} from "tailwind-merge";
+import {Filters} from "./types";
+import {emojis, RatingKey} from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function filterPosts(filter: Filters, posts: Entry[]) {
+export function filterPosts(filter: Filters, posts: any[]) {
   let filteredFriends = [];
   switch (filter) {
     case "most-likes":
@@ -25,4 +26,14 @@ export function filterPosts(filter: Filters, posts: Entry[]) {
       );
   }
   return filteredFriends;
+}
+
+export function displayEmoji(value: number | undefined, name: string) {
+  if (value === undefined) return "";
+  const key = name.split(".").pop();
+
+  if (value <= 3) return emojis[key as RatingKey][3];
+  if (value > 3 && value <= 6) return emojis[key as RatingKey][2];
+  if (value >= 7 && value < 9) return emojis[key as RatingKey][1];
+  if (value >= 9) return emojis[key as RatingKey][0];
 }

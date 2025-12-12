@@ -8,21 +8,23 @@ generator client {
 }
 
 model Entry {
-  id  Int     @id @default(autoincrement())
-  pq0 String
-  pq1 String?
-  pq2 String?
-  pq3 String?
-  pq4 String?
-  // pq5 String
+  id   Int     @id @default(autoincrement())
+  name String
+  pq0  String?
+  pq1  String?
+  pq2  String?
+  pq3  String?
 
-  vq0       String?
-  vq1       String?
-  vq2       String?
-  vq3       String?
-  vq4       String?
-  // vq5 String
-  uploadURL String? @default("/no-image.png")
+  vq0 String?
+  vq1 String?
+  vq2 String?
+  vq3 String?
+  vq4 String?
+
+  sliders       Json?
+  strikeThrough Boolean[] @default([])
+
+  uploadURL String?
 
   published Boolean  @default(false)
   createdAt DateTime @default(now())

@@ -1,12 +1,10 @@
 "use client";
-import {toggleLike} from "@/app/actions/actions";
-import {Entry} from "@/generated/prisma";
+import {revalidateFeed, toggleLike} from "@/app/actions/actions";
+import {Heart} from "lucide-react";
 import {useEffect, useState} from "react";
 import {Button} from "./ui/button";
-import {Heart} from "lucide-react";
-import {randomUUID} from "crypto";
 
-function LikeButton({friend}: {friend: Entry}) {
+function LikeButton({friend}: any) {
   const [likesPerPost, setLikesPerPost] = useState<string[]>(friend.likes);
   const [likeButtonDisabled, setLikeButtonDisabled] = useState<boolean>(false);
   const [anonId, setAnonId] = useState("");
@@ -26,8 +24,10 @@ function LikeButton({friend}: {friend: Entry}) {
   async function like(postId: number) {
     setLikeButtonDisabled(true);
     const newLikes = await toggleLike(anonId, postId);
+    await revalidateFeed();
     if (!newLikes) return;
     setLikesPerPost(newLikes);
+
     setLikeButtonDisabled(false);
   }
 

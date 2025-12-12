@@ -1,4 +1,3 @@
-// src/app/api/entries/route.ts
 import {NextResponse} from "next/server";
 import type {NextRequest} from "next/server";
 import prisma from "@/lib/prisma"; // passe Pfad an, falls nötig

@@ -1,16 +1,29 @@
 import * as z from "zod";
+import {strikeThrough} from "./constants";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 1MB
 
 export const formSchema = z.object({
-  pq0: z
+  strikeThrough: z.array(z.boolean()).length(strikeThrough.length).optional(),
+
+  sliders: z
+    .record(
+      z.string(),
+      z.object({
+        enabled: z.boolean().optional(),
+        value: z.number().optional(),
+      }),
+    )
+    .optional(),
+
+  name: z
     .string({error: "Bitte beantworte die Frage"})
     .max(200)
     .min(1, "Bitte beantworte die Frage"),
+  pq0: z.string().max(200).optional(),
   pq1: z.string().max(200).optional(),
   pq2: z.string().max(200).optional(),
   pq3: z.string().max(200).optional(),
-  pq4: z.string().max(200).optional(),
   vq0: z.string().max(200).optional(),
   vq1: z.string().max(200).optional(),
   vq2: z.string().max(200).optional(),

@@ -1,18 +1,19 @@
-import FeedPersonDescription from "@/components/feed-person";
-import {Button} from "@/components/ui/button";
-import {ArrowLeft} from "lucide-react";
-import {Entry} from "@/generated/prisma";
-import Link from "next/link";
-import LikeButton from "@/components/like-button";
-import prisma from "@/lib/prisma";
+import BackButton from "@/components/back-button";
 import SelectFilter from "@/components/select-filter";
+import {Button} from "@/components/ui/button";
+import {Card, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
+import prisma from "@/lib/prisma";
+import {Filters} from "@/lib/types";
 import {filterPosts} from "@/lib/utils";
+import {ArrowLeft, Heart} from "lucide-react";
+import Link from "next/link";
 
 export const revalidate = 30;
 
 async function Page({searchParams}: any) {
-  const friends: Entry[] = await prisma.entry.findMany({
+  const friends = await prisma.entry.findMany({
     where: {published: true},
+    select: {id: true, likes: true, name: true, createdAt: true},
   });
 
   const rawFilter = (await searchParams).filter ?? "most-likes";
@@ -24,30 +25,37 @@ async function Page({searchParams}: any) {
       : "most-likes";
 
   return (
-    <div className="flex flex-col items-center mt-4 relative">
-      <Link href={"/"} className="absolute left-4">
-        <Button>
-          <ArrowLeft />
-        </Button>
-      </Link>
-
-      <div className="flex flex-col items-center gap-4 sm:flex-row ">
-        <h1 className="">Hier findest du Valis Freunde!</h1>
-
-        <SelectFilter filter={filter} />
+    <>
+      <BackButton />
+      <div className="flex flex-col items-center mt-4 relative">
+        <div className="flex flex-col items-center gap-4 sm:flex-row ">
+          <h1 className="">Hier findest du Valis Freunde!</h1>
+          <SelectFilter filter={filter} />
+        </div>
+        <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-3 gap-4 w-full sm:w-1/2 px-12 sm:p-0 mt-4">
+          {filterPosts(filter, friends).map((friend) => {
+            return (
+              <Card key={friend.id} className="p-3 shadow-sm">
+                <CardHeader className="p-0 ">
+                  <CardTitle className=" font-medium truncate">
+                    {friend.name}
+                  </CardTitle>
+                </CardHeader>
+                <div className="text-muted-foreground  flex items-center">
+                  <Heart fill="red" stroke="none" className="mr-2" />
+                  {friend.likes.length}
+                </div>
+                <CardFooter className="p-0">
+                  <Link href={`/details/${friend.id}`} prefetch={true}>
+                    <Button className="py-1.5 px-3  h-auto">Anschauen</Button>
+                  </Link>
+                </CardFooter>
+              </Card>
+            );
+          })}
+        </div>
       </div>
-
-      <div className="w-full mt-4 sm:w-[75%] grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {filterPosts(filter, friends).map((friend) => {
-          return (
-            <div className="flex flex-col px-4 mb-4" key={friend.id}>
-              <FeedPersonDescription req={friend} />
-              <LikeButton friend={friend} />
-            </div>
-          );
-        })}
-      </div>
-    </div>
+    </>
   );
 }
 

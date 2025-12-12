@@ -1,5 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
+import {revalidatePath} from "next/cache";
 
 export async function toggleLike(anonId: string, postId: number) {
   const post = await prisma.entry.findUnique({
@@ -21,4 +22,8 @@ export async function toggleLike(anonId: string, postId: number) {
     });
     return newLikes;
   }
+}
+
+export async function revalidateFeed() {
+  revalidatePath("feed");
 }
