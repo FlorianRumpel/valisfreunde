@@ -127,7 +127,10 @@ export default function FreundebuchForm() {
                       );
                     }}
                   />
+                  <CustomSlider control={form.control} name="sliders.mood" />
+
                   <FormQuestions questions={questions} form={form} type="pq" />
+                  <StrikeThrough control={form.control} name="strikeThrough" />
 
                   <UploadButton
                     control={form.control}
@@ -145,9 +148,6 @@ export default function FreundebuchForm() {
               </CardHeader>
               <CardContent>
                 <FieldGroup>
-                  <CustomSlider control={form.control} name="sliders.mood" />
-
-                  <StrikeThrough control={form.control} name="strikeThrough" />
                   <FormQuestions questions={questions} form={form} type="vq" />
                 </FieldGroup>
               </CardContent>
