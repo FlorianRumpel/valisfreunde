@@ -1,5 +1,5 @@
 "use client";
-import {useRouter, useSearchParams} from "next/navigation";
+import {useRouter} from "next/navigation";
 import {
   Select,
   SelectContent,
@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { Filters } from "@/lib/types";
 
 function SelectFilter({filter}: {filter: Filters}) {
   const router = useRouter();

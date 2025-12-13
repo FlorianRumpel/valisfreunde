@@ -20,6 +20,7 @@ import {Eye, EyeOff, Trash2} from "lucide-react";
 import ActionButton from "@/components/action-button";
 import {filterPosts} from "@/lib/utils";
 import SelectFilter from "@/components/select-filter";
+import { Filters } from "@/lib/types";
 
 async function page({searchParams}: any) {
   const cookieStore = await cookies();
