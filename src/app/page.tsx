@@ -10,7 +10,7 @@ export default function Home() {
       </div>
       <p className="w-1/2 md:max-w-1/3 ">
         Willkommen in meinem Digitalen Freundebuch! Lerne meine Freunde kennen
-        oder hinterlasse selbst einen Eintrag fuer die Ewigkeit.
+        oder hinterlasse selbst einen Eintrag für die Ewigkeit.
       </p>
       <Link href={"/form"}>
         <Button>Sende eine Freundesanfrage</Button>
