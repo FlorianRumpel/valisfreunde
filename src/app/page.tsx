@@ -8,17 +8,23 @@ export default function Home() {
         <p className="text-5xl font-bold font-pacifico text-pink-600">Valis</p>
         <p className="font-bold text-3xl">Freundebuch</p>
       </div>
-      <p className="w-1/2 md:max-w-1/3 ">
-        Willkommen in meinem Digitalen Freundebuch! Lerne meine Freunde kennen
-        oder hinterlasse selbst einen Eintrag für die Ewigkeit.
-      </p>
-      <Link href={"/form"}>
-        <Button>Sende eine Freundesanfrage</Button>
-      </Link>
+      <div className="mx-8 md:max-w-1/3 text-center">
+        <p>
+          Willkommen in meinem Digitalen Freundebuch! Lerne meine Freunde kennen
+          oder hinterlasse selbst einen Eintrag für die Ewigkeit.
+        </p>
+      </div>
 
-      <Link href={"/feed"}>
-        <Button variant={"secondary"}>Schaue dir Valis Freunde an</Button>
-      </Link>
+      <div className="flex gap-4 flex-col ">
+        <Link href={"/feed"}>
+          <Button className="w-full ">Freundebuch ansehen</Button>
+        </Link>
+        <Link href={"/form"}>
+          <Button className="w-full" variant={"secondary"}>
+            Ins Freundebuch eintragen
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 }
