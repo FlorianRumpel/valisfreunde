@@ -1,9 +1,9 @@
-import {strikeThrough} from "@/lib/constants";
+import { strikeThroughLabels } from "@/lib/constants";
 
-import {Control, Controller} from "react-hook-form";
-import {Field, FieldDescription, FieldError, FieldLabel} from "./ui/field";
-import {Input} from "./ui/input";
-import {SetStateAction} from "react";
+import { Control, Controller } from "react-hook-form";
+import { Field, FieldDescription, FieldError, FieldLabel } from "./ui/field";
+import { Input } from "./ui/input";
+import { SetStateAction } from "react";
 
 type PageProps = {
   control: Control<any>;
@@ -12,13 +12,16 @@ type PageProps = {
   preview: string | undefined;
 };
 
-function UploadButton({control, name, setPreview, preview}: PageProps) {
+function UploadButton({ control, name, setPreview, preview }: PageProps) {
   return (
     <Controller
       control={control}
       name={name}
-      defaultValue={Array.from({length: strikeThrough.length}, () => true)}
-      render={({field, fieldState}) => (
+      defaultValue={Array.from(
+        { length: strikeThroughLabels.length },
+        () => true,
+      )}
+      render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
           <FieldLabel>Foto hochladen (optional)</FieldLabel>
           <Input

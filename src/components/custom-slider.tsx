@@ -1,23 +1,26 @@
-import {defaultSliderValue, strikeThrough} from "@/lib/constants";
-import {displayEmoji} from "@/lib/utils";
+import { defaultSliderValue, strikeThroughLabels } from "@/lib/constants";
+import { displayEmoji } from "@/lib/utils";
 
-import {Control, Controller} from "react-hook-form";
-import {Field, FieldError, FieldLabel} from "./ui/field";
-import {Slider} from "./ui/slider";
-import {Checkbox} from "./ui/checkbox";
+import { Control, Controller } from "react-hook-form";
+import { Field, FieldError, FieldLabel } from "./ui/field";
+import { Slider } from "./ui/slider";
+import { Checkbox } from "./ui/checkbox";
 
 type PageProps = {
   control: Control<any>;
   name: string;
 };
 
-function CustomSlider({control, name}: PageProps) {
+function CustomSlider({ control, name }: PageProps) {
   return (
     <Controller
       control={control}
       name={name}
-      defaultValue={Array.from({length: strikeThrough.length}, () => true)}
-      render={({field, fieldState}) => (
+      defaultValue={Array.from(
+        { length: strikeThroughLabels.length },
+        () => true,
+      )}
+      render={({ field, fieldState }) => (
         <Field
           className={!field.value?.enabled ? "opacity-50 " : ""}
           data-invalid={fieldState.invalid}
@@ -37,7 +40,7 @@ function CustomSlider({control, name}: PageProps) {
                 : [field.value.value]
             }
             onValueChange={(v) => {
-              field.onChange({...field.value, value: v[0]});
+              field.onChange({ ...field.value, value: v[0] });
             }}
           ></Slider>
           <div className="w-auto flex items-center gap-2 ">
@@ -47,7 +50,7 @@ function CustomSlider({control, name}: PageProps) {
               id="funny"
               checked={field.value?.enabled}
               onCheckedChange={(v) => {
-                field.onChange({...field.value, enabled: v});
+                field.onChange({ ...field.value, enabled: v });
               }}
             />
           </div>

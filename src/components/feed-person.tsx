@@ -1,12 +1,21 @@
-import {Entry} from "@/generated/prisma";
-import {questionKeys, questions} from "@/lib/constants";
+import { Entry } from "@/generated/prisma";
+import {
+  questionKeys,
+  questions,
+  RatingKey,
+  SliderItem,
+  strikeThroughLabels,
+} from "@/lib/constants";
+import { displayEmoji } from "@/lib/utils";
 import Image from "next/image";
+import { Button } from "./ui/button";
 
-function FeedPersonDescription({req}: {req: Entry}) {
+function FeedPersonDescription({ req }: { req: Entry }) {
   const url =
     req.uploadURL == "no-picture.png"
       ? "/no-picture.png"
       : `/api/images/${req.uploadURL}`;
+  const sliders = req.sliders as Record<RatingKey, SliderItem>;
 
   return (
     <div key={req.id} className="mb-4 p-4 border rounded-lg ">
@@ -23,6 +32,12 @@ function FeedPersonDescription({req}: {req: Entry}) {
       </div>
       <div>
         <h2 className="text-2xl font-bold mb-2">{req.name}</h2>
+        {sliders.mood.enabled && (
+          <div>
+            <strong>So bin ich heute drauf:</strong>{" "}
+            {displayEmoji(sliders.mood.value, "mood")}
+          </div>
+        )}
         {Object.entries(req).map(([key, value]) => {
           if (!key.startsWith("pq") && !key.startsWith("vq")) return;
           if (value == null || (typeof value == "string" && value.trim() == ""))
@@ -38,6 +53,39 @@ function FeedPersonDescription({req}: {req: Entry}) {
             </p>
           );
         })}
+
+        <div>
+          <strong>Das mag ich: </strong>
+          {req.strikeThrough.map((label, i) => {
+            if (label == false) return;
+            return (
+              <Button
+                type="button"
+                variant={"default"}
+                key={i}
+                className={`px-2 py-1 border rounded ${!label && "line-through"}`}
+              >
+                {strikeThroughLabels[i]}
+              </Button>
+            );
+          })}
+        </div>
+        <div className="mt-4">
+          <strong>Das mag ich: </strong>
+          {req.strikeThrough.map((label, i) => {
+            if (label == true) return;
+            return (
+              <Button
+                type="button"
+                variant={"outline"}
+                key={i}
+                className={`px-2 py-1 border rounded `}
+              >
+                {strikeThroughLabels[i]}
+              </Button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

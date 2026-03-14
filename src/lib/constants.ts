@@ -31,7 +31,7 @@ export const questions = {
   },
 };
 
-export const strikeThrough = [
+export const strikeThroughLabels = [
   "Schokolade",
   "Regen",
   "Montage",

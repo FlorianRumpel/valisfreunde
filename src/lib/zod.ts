@@ -1,10 +1,13 @@
 import * as z from "zod";
-import {strikeThrough} from "./constants";
+import { strikeThroughLabels } from "./constants";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 1MB
 
 export const formSchema = z.object({
-  strikeThrough: z.array(z.boolean()).length(strikeThrough.length).optional(),
+  strikeThrough: z
+    .array(z.boolean())
+    .length(strikeThroughLabels.length)
+    .optional(),
 
   sliders: z
     .record(
@@ -17,7 +20,7 @@ export const formSchema = z.object({
     .optional(),
 
   name: z
-    .string({error: "Bitte beantworte die Frage"})
+    .string({ error: "Bitte beantworte die Frage" })
     .max(200)
     .min(1, "Bitte beantworte die Frage"),
   pq0: z.string().max(200).optional(),
@@ -37,6 +40,8 @@ export const formSchema = z.object({
         if (!file) return true;
         return file.size <= MAX_FILE_SIZE;
       },
-      {error: `Datei darf maximal ${MAX_FILE_SIZE / 1024 / 1024}MB groß sein`},
+      {
+        error: `Datei darf maximal ${MAX_FILE_SIZE / 1024 / 1024}MB groß sein`,
+      },
     ),
 });
