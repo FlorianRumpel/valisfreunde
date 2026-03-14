@@ -3,7 +3,7 @@ export const questions = {
     text: "Wie würdest du dich in einem Satz beschreiben?",
     description: "Über mich:",
   },
-  pq1: {text: "Was ist dein Lieblingsessen?", description: "Lieblingsessen:"},
+  pq1: { text: "Was ist dein Lieblingsessen?", description: "Lieblingsessen:" },
   pq2: {
     text: "Hast du ein verborgenes Talent?",
     description: "Verborgenes Talent:",
@@ -12,7 +12,7 @@ export const questions = {
     text: "Was machst du am liebsten in deiner Freizeit?",
     description: "Freizeitaktivität:",
   },
-  vq0: {text: "Wie würdest du Vali beschreiben?", description: "Über Vali:"},
+  vq0: { text: "Wie würdest du Vali beschreiben?", description: "Über Vali:" },
   vq1: {
     text: "Was schätzt du am meisten an Vali?",
     description: "Was ich an Vali schätze:",
@@ -32,14 +32,26 @@ export const questions = {
 };
 
 export const strikeThrough = [
-  "Option 1",
-  "Option 2",
-  "Option 3",
-  "Option 4",
-  "adfla",
-  "Option 3",
-  "Option 4",
-  "adfla",
+  "Schokolade",
+  "Regen",
+  "Montage",
+  "Katzen",
+  "Hunde",
+  "Schule",
+  "Kaffee",
+  "Horrorfilme",
+  "Shopping",
+  "Frühaufstehen",
+  "Partys",
+  "Sport",
+  "Sushi",
+  "Winterkälte",
+  "Achterbahnen",
+  "Stille",
+  "Abenteuer",
+  "Kuscheln",
+  "Chillen",
+  "Chaos",
 ];
 
 export function questionKeys() {
@@ -50,7 +62,7 @@ export const defaultSliderValue = 7;
 
 export const sliderKeys = ["chaos_level", "mood", "creativity"] as const;
 export type RatingKey = (typeof sliderKeys)[number];
-export type SliderItem = {enabled?: boolean; value?: number};
+export type SliderItem = { enabled?: boolean; value?: number };
 
 export const emojis: Record<RatingKey, String[]> = {
   chaos_level: [],
