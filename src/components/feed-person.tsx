@@ -71,7 +71,7 @@ function FeedPersonDescription({ req }: { req: Entry }) {
           })}
         </div>
         <div className="mt-4">
-          <strong>Das mag ich: </strong>
+          <strong>Das mag ich nicht: </strong>
           {req.strikeThrough.map((label, i) => {
             if (label == true) return;
             return (

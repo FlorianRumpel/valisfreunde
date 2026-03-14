@@ -23,7 +23,7 @@ function UploadButton({ control, name, setPreview, preview }: PageProps) {
       )}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
-          <FieldLabel>Foto hochladen (optional)</FieldLabel>
+          <FieldLabel>Foto hochladen</FieldLabel>
           <Input
             type="file"
             accept="image/*"
